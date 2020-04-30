@@ -6,7 +6,7 @@ from flask_restx import Api, Resource
 app = Flask(__name__)
 
 # importando los modelos
-from models.userModel import *
+from models import *
 
 # instancia de la clase Api
 api = Api(
@@ -17,12 +17,12 @@ api = Api(
     )
 
 # endpoint de prueba
-@api.route('/hello', endpoint='hola')
-class HelloWorld(Resource):
-    def get(self):
-        return {'hello': 'world'}
+# @api.route('/buenas', endpoint='hola')
+# class HelloWorld(Resource):
+#     def get(self):
+#         return {'hello': 'world'}
 
 
 if __name__ == "__main__":
-	app.run(port=8080, debug=True)
+	app.run(port=8000, debug=True)
 

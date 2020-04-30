@@ -1,16 +1,9 @@
-# agregando configuracion de alchemy
-from connection.conexion import connexionBD
-from flask_sqlalchemy import SQLAlchemy
+# importando el init
+from . import db
+
 import datetime
-# from main import app
-# url de la conexion a la BD
-app.config['SQLALCHEMY_DATABASE_URI'] = connexionBD["URI"]
 
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = connexionBD["TRACK_MODIFICATIONS"]
-app.config["SQLALCHEMY_ECHO"] = connexionBD["ECHO"]
-# instancia a SQLAlchemy
-db = SQLAlchemy(app)
-
+# la clase user creara la tabla users en la base de datos
 class User(db.Model):
     __tablename__ ='users'
 
@@ -24,4 +17,3 @@ class User(db.Model):
     foto = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text())
 
-db.create_all()
