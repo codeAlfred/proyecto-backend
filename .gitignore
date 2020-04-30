@@ -1,0 +1,38 @@
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+base_datos
+*.__pycache__
+__pycache__/
+
+.env
+
+# Configuracion de configuración de vscode
+.vscode
+
+# BD sqlLite
+*.db
