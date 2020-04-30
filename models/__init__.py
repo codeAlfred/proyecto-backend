@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 
 
-from main import app
+from server import app
 
 # importando la instancia que ejecuta la clase ConnexionBD
 from connection.conexion import connexionBD
