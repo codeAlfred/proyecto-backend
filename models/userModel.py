@@ -1,5 +1,5 @@
 # importando el init
-from . import db
+from . import db,ma
 
 import datetime
 
@@ -16,4 +16,10 @@ class User(db.Model):
     fechaNacimiento = db.Column(db.DateTime, default=datetime.datetime.now())
     foto = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text())
-
+    
+class UserSchema(ma.Schema):
+    class Meta:
+        fields = ("id","nombre","apellido","password","email","movil","fechaNacimiento","foto","description")
+        
+userSchema = UserSchema()
+usersSchema = UserSchema(many=True)
