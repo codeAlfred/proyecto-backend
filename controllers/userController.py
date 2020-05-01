@@ -4,12 +4,15 @@ from flask import request
 from models import *
 from flask_restx import Resource
 
+import datetime
+
 class UserController(Resource):
-  
+  # BUSCAR un usuario por su id
   def get(self,id):
     user = User.query.get_or_404(id)
     return userSchema.dump(user)
   
+  # ACTUALIZAR un usuario por su id
   def put(self, id):
     data = request.get_json()
     user = User.query.filter_by(id=id).first()
@@ -25,7 +28,8 @@ class UserController(Resource):
     
     user = User.query.filter_by(id=id).first()
     return userSchema.dump(user)
-   
+  
+  #  ELIMINAR un usuario por su id
   def delete (self,id):
     user = User.query.filter_by(id=id).first()
     db.session.delete(user)
@@ -33,13 +37,21 @@ class UserController(Resource):
     return userSchema.dump(user)
 
 class UserPostController(Resource):
-  
+  # LISTAR todos los usuarios
   def get(self):
     users = User.query.all()
+    print("aaaaaaaaaaaaaaaaaaaa")
+    print(users)
+    print("aaaaaaaaaaaaaaaaaaaa")
     return userSchema.dump(users)
   
+  # AGREGAR un usuario
   def post(self):
     data = request.get_json()
+    # recibir la fecha con formato aaaa-mm-dd
+    date_time_str = data['fechaNacimiento']
+    # convertir la fecha de tipo string a tipo datetime
+    date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%d')
     
     new_user = User(
       nombre=data['nombre'],
@@ -47,7 +59,7 @@ class UserPostController(Resource):
       password = data['password'],
       email = data['email'],
       movil = data['movil'],
-      fechaNacimiento = data['fechaNacimiento'],
+      fechaNacimiento = date_time_obj,
       foto = data['foto'],
       description = data['description'],
       estado_id = data['estado_id'],

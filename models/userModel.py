@@ -20,12 +20,7 @@ class User(db.Model):
     sede_id = db.Column(db.Integer, db.ForeignKey('sedes.id'))
 
 
-class UserSchema(ma.Schema):
-    class Meta:
-        fields = ("id","nombre","apellido","password","email","movil","fechaNacimiento","foto","description")
 
-userSchema = UserSchema()
-usersSchema = UserSchema(many=True)
 
 
 class Estado(db.Model):
@@ -42,3 +37,9 @@ class Sede(db.Model):
     nombreSede = db.Column(db.String(100), unique=True, nullable=False)
     users= db.relationship('User', backref='sede', lazy=True)
 
+class UserSchema(ma.Schema):
+    class Meta:
+        fields = ("id","nombre","apellido","password","email","movil","fechaNacimiento","foto","description","estado_id","sede_id")
+
+userSchema = UserSchema()
+usersSchema = UserSchema(many=True)
