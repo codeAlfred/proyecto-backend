@@ -32,7 +32,7 @@ class ConnexionBD(Environment):
         }
     # funcion que retornara la uri de conexion a sqlite
     def __sqlLite(self):
-        return "sqlite:///testSQLite.db"
+        return "sqlite:///TESTSQ.db"
 
     # funcion que retornara la uri de conexion a mysql
     def __mysql(self):

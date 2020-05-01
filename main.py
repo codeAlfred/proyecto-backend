@@ -7,10 +7,14 @@ from server import *
 from models import *
 
 from controllers.userController import UserController,UserPostController
+from controllers.loginController import LoginController
 
 user = api.namespace('api',description='User API')
 user.add_resource(UserPostController,'/user')
 user.add_resource(UserController,'/user/<int:id>')
+
+login = api.namespace('api', description='Login API')
+login.add_resource(LoginController, '/login')
 
 # endpoint de prueba
 # @api.route('/buenas', endpoint='hola')

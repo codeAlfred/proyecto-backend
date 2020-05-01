@@ -1,7 +1,7 @@
 # importando el init
 from . import db,ma
-
 import datetime
+from flask_bcrypt import generate_password_hash, check_password_hash
 
 # la clase user creara la tabla users en la base de datos
 class User(db.Model):
@@ -13,15 +13,17 @@ class User(db.Model):
     password = db.Column(db.String(115), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     movil       = db.Column(db.String(15), unique=True, nullable=False)
-    fechaNacimiento = db.Column(db.DateTime, default=datetime.datetime.now())
+    fechaNacimiento = db.Column(db.Date, default=datetime.datetime.now())
     foto = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.Text())
+    description = db.Column(db.Text(),nullable=False)
     estado_id = db.Column(db.Integer, db.ForeignKey('estados.id'))
     sede_id = db.Column(db.Integer, db.ForeignKey('sedes.id'))
+    
+    def hash_password(self):
+        self.password = generate_password_hash(self.password).decode('utf8')
 
-
-
-
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
 
 class Estado(db.Model):
     __tablename__ ='estados'

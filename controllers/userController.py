@@ -1,4 +1,5 @@
 from flask import request
+from flask_jwt_extended import jwt_required#jwt
 
 #Modulos propios del sistema
 from models import *
@@ -8,20 +9,27 @@ import datetime
 
 class UserController(Resource):
   # BUSCAR un usuario por su id
+  @jwt_required
   def get(self,id):
     user = User.query.get_or_404(id)
     return userSchema.dump(user)
   
   # ACTUALIZAR un usuario por su id
+  @jwt_required
   def put(self, id):
+    
     data = request.get_json()
+    date_time_str = data['fechaNacimiento']
+
+    date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%d')
+    
     user = User.query.filter_by(id=id).first()
     if "nombre" in data: user.nombre = data["nombre"]
     if "apellido" in data: user.apellido = data["apellido"]
     if "password" in data: user.password = data["password"]
     if "email" in data: user.email = data["email"]
     if "movil" in data: user.movil = data["movil"]
-    if "fechaNacimiento" in data: user.fechaNacimiento = data["fechaNacimiento"]
+    if "fechaNacimiento" in data: user.fechaNacimiento = date_time_obj
     if "foto" in data: user.foto = data["foto"]
     if "description" in data: user.description = data["description"]
     db.session.commit()
@@ -30,6 +38,7 @@ class UserController(Resource):
     return userSchema.dump(user)
   
   #  ELIMINAR un usuario por su id
+  @jwt_required
   def delete (self,id):
     user = User.query.filter_by(id=id).first()
     db.session.delete(user)
@@ -38,14 +47,13 @@ class UserController(Resource):
 
 class UserPostController(Resource):
   # LISTAR todos los usuarios
+  @jwt_required
   def get(self):
     users = User.query.all()
-    print("aaaaaaaaaaaaaaaaaaaa")
-    print(users)
-    print("aaaaaaaaaaaaaaaaaaaa")
-    return userSchema.dump(users)
+    return usersSchema.dump(users)
   
   # AGREGAR un usuario
+  @jwt_required
   def post(self):
     data = request.get_json()
     # recibir la fecha con formato aaaa-mm-dd
@@ -69,4 +77,6 @@ class UserPostController(Resource):
     db.session.add(new_user)
     db.session.commit()
     return userSchema.dump(new_user)
+  
+  
   
