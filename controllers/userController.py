@@ -49,7 +49,9 @@ class UserPostController(Resource):
       movil = data['movil'],
       fechaNacimiento = data['fechaNacimiento'],
       foto = data['foto'],
-      description = data['description']
+      description = data['description'],
+      estado_id = data['estado_id'],
+      sede_id = data['sede_id']
     )
     
     db.session.add(new_user)
