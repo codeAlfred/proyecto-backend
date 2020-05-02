@@ -45,3 +45,10 @@ class UserSchema(ma.Schema):
 
 userSchema = UserSchema()
 usersSchema = UserSchema(many=True)
+
+class EstadoSchema(ma.Schema):
+    class Meta:
+        fields = ("id","nombreEstado")
+
+estadoSchema = EstadoSchema()
+estadosSchema = EstadoSchema(many=True)
