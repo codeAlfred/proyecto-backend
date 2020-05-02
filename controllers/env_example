@@ -1,0 +1,20 @@
+# VARIABLES DEL SERVICIO
+PORTAPI     = 8000
+DEBUG       = "True"
+
+# VARIABLES PARA INDICAR EL TIPO DE BASE DE DATOS
+# VALORES POSIBLES ["mysql", "sqlLite", "pg"]. POR DEFECTO (sqlLite)
+BD          = "sqlLite"
+
+JWT_SECRET_KEY = 't1NP63m4wnBg6nyHYKfmc2TpCOGI4nss'
+
+# HOST        =
+# DATABASE    =
+# PORT        =
+# USER        =
+# PWD         =
+
+# VARIABLES PARA LA CONFIGURACIóN DE SQLAlchemy
+TRACK_MODIFICATIONS = False
+ECHO = True
+
