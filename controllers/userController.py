@@ -39,11 +39,9 @@ class UserController(Resource):
 class UserPostController(Resource):
   # LISTAR todos los usuarios
   def get(self):
+    # seleccionar todos los usuarios
     users = User.query.all()
-    print("aaaaaaaaaaaaaaaaaaaa")
-    print(users)
-    print("aaaaaaaaaaaaaaaaaaaa")
-    return userSchema.dump(users)
+    return usersSchema.dump(users)
   
   # AGREGAR un usuario
   def post(self):
@@ -70,3 +68,25 @@ class UserPostController(Resource):
     db.session.commit()
     return userSchema.dump(new_user)
   
+
+class UserOrderController(Resource):
+  # LISTAR todos los usuarios por orden de apellido
+  def get(self, orden):
+    # ordenar usuarios
+    users=''
+    if orden == 'apellido':
+      users = User.query.order_by(User.apellido).all()
+
+    if orden == 'nombre':
+      users = User.query.order_by(User.nombre).all()
+
+    return usersSchema.dump(users)
+
+class UserSearchController(Resource):
+  # LISTAR todos los usuarios por orden de apellido
+  def get(self, nombre):
+    # ordenar usuarios
+    name = nombre
+    search ="%{}%".format(name)
+    users = User.query.filter(User.nombre.like(search)).all()
+    return usersSchema.dump(users)

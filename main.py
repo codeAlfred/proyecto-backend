@@ -6,11 +6,14 @@ from server import *
 # importando los modelos
 from models import *
 
-from controllers.userController import UserController,UserPostController
+from controllers.userController import UserController,UserPostController, UserOrderController, UserSearchController
 
 user = api.namespace('api',description='User API')
 user.add_resource(UserPostController,'/user')
 user.add_resource(UserController,'/user/<int:id>')
+user.add_resource(UserOrderController,'/user/order/<string:orden>')
+user.add_resource(UserSearchController,'/user/search/<string:nombre>')
+
 
 # endpoint de prueba
 # @api.route('/buenas', endpoint='hola')
