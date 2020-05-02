@@ -94,12 +94,49 @@ class UserOrderController(Resource):
     return usersSchema.dump(users)
 
 class UserSearchController(Resource):
-  # LISTAR todos los usuarios por orden de apellido
+  # BUSCAR todos los usuarios por letras en su nombre
   def get(self, nombre):
     # ordenar usuarios
     name = nombre
     search ="%{}%".format(name)
     users = User.query.filter(User.nombre.like(search)).all()
     return usersSchema.dump(users)
-  
-  
+
+class UserStateController(Resource):
+  pass
+  # BUSCAR todos los usuarios por letras en su nombre
+  def get(self):
+    # Obtener el json enviado
+    data = request.get_json()
+    # obtener id de estado
+    idEstado=self.obtenerIdEstado(data)
+    # buscar los usuarios con el idEstado del estado enviado por el json
+    users= User.query.filter_by(estado_id=idEstado).all()
+    return usersSchema.dump(users)
+
+  def put(self):
+    # Obtener el json enviado
+    data = request.get_json()
+    # obtener el id
+    idUser=data['id']
+    # buscar el usuario con id
+    user = User.query.filter_by(id=idUser).first()
+    # obtener id de estado
+    idEstado=self.obtenerIdEstado(data)
+    # actualizar su estado
+    if "estado" in data:
+      user.estado_id = idEstado
+    #
+    db.session.commit()
+
+    user = User.query.filter_by(id=idUser).first()
+    return userSchema.dump(user)
+
+  def obtenerIdEstado(self,data):
+     # obtener el estado enviado en el json
+    nombreEstado = data['estado']
+    # buscar en la tabla Estados
+    estado= Estado.query.filter_by(nombreEstado=nombreEstado).all()
+    # obtener el id del estado enviado por el json
+    idEstado= estadosSchema.dump(estado)[0]['id']
+    return idEstado
