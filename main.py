@@ -6,7 +6,7 @@ from server import *
 # importando los modelos
 from models import *
 
-from controllers.userController import UserController,UserPostController, UserOrderController, UserSearchController, UserSearchStateController
+from controllers.userController import UserController,UserPostController, UserOrderController, UserSearchController, UserStateController
 from controllers.userController import UserController,UserPostController
 from controllers.loginController import LoginController
 
@@ -15,7 +15,7 @@ user.add_resource(UserPostController,'/user')
 user.add_resource(UserController,'/user/<int:id>')
 user.add_resource(UserOrderController,'/user/order/<string:orden>')
 user.add_resource(UserSearchController,'/user/search/<string:nombre>')
-user.add_resource(UserSearchStateController,'/user/search/state/algo')
+user.add_resource(UserStateController,'/user/state')
 
 
 login = api.namespace('api', description='Login API')
