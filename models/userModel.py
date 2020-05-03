@@ -18,6 +18,7 @@ class User(db.Model):
     description = db.Column(db.Text(),nullable=False)
     estado_id = db.Column(db.Integer, db.ForeignKey('estados.id'))
     sede_id = db.Column(db.Integer, db.ForeignKey('sedes.id'))
+    conexion = db.relationship('Conexion', backref='user', lazy=True)
     
     def hash_password(self):
         self.password = generate_password_hash(self.password).decode('utf8')
@@ -52,3 +53,10 @@ class EstadoSchema(ma.Schema):
 
 estadoSchema = EstadoSchema()
 estadosSchema = EstadoSchema(many=True)
+
+# ************************************
+class Conexion(db.Model):
+    __tablename__ = 'detalle_conexion'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    create_At = db.Column(db.DateTime, default=datetime.datetime.now())
