@@ -103,7 +103,7 @@ class UserSearchController(Resource):
     return usersSchema.dump(users)
 
 class UserStateController(Resource):
-  
+
   # BUSCAR todos los usuarios por su estado
   def get(self):
     # Obtener el json enviado
@@ -114,6 +114,7 @@ class UserStateController(Resource):
     users= User.query.filter_by(estado_id=idEstado).all()
     return usersSchema.dump(users)
 
+  # ACTUALIZAR el estado de un usuario
   def put(self):
     # Obtener el json enviado
     data = request.get_json()
@@ -140,3 +141,17 @@ class UserStateController(Resource):
     # obtener el id del estado enviado por el json
     idEstado= estadosSchema.dump(estado)[0]['id']
     return idEstado
+
+
+class UserLastConnectionController(Resource):
+  # MOSTRAR la ultima conexion activa
+  def get(self):
+    # Obtener el json enviado
+    data = request.get_json()
+    # obtener el id del usuario enviado por json
+    idUser=data['idUser']
+    # buscar los datos por id de usuario y ordenarlos de forma descendenete para obtener la ultima fila ingresada
+    usersConnection= Conexion.query.filter_by(user_id=idUser).order_by(Conexion.create_At.desc()).first()
+  
+    return conexionSchema.dump(usersConnection)
+
