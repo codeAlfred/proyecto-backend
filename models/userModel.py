@@ -60,3 +60,11 @@ class Conexion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     create_At = db.Column(db.DateTime, default=datetime.datetime.now())
+
+
+class ConexionSchema(ma.Schema):
+    class Meta:
+        fields = ("id","user_id","create_At")
+
+conexionSchema = ConexionSchema()
+conexionsSchema = ConexionSchema(many=True)
