@@ -6,6 +6,8 @@ from flask_jwt_extended import JWTManager
 from models import *
 from flask_restx import Resource
 
+import datetime
+
 class LoginController(Resource):
 
   def post(self):
@@ -27,6 +29,12 @@ class LoginController(Resource):
       # cambiar el estado a conectado
       idEstado=1
       user.estado_id = idEstado
+       # agregar la fecha de conexion a la hora de logearse
+      new_conexion=Conexion(
+        user_id=user1['id'],
+        create_At= datetime.datetime.now()
+      )
+      db.session.add(new_conexion)
 
       db.session.commit()
 
