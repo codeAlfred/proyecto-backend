@@ -103,8 +103,8 @@ class UserSearchController(Resource):
     return usersSchema.dump(users)
 
 class UserStateController(Resource):
-  pass
-  # BUSCAR todos los usuarios por letras en su nombre
+  
+  # BUSCAR todos los usuarios por su estado
   def get(self):
     # Obtener el json enviado
     data = request.get_json()
@@ -122,9 +122,9 @@ class UserStateController(Resource):
     # buscar el usuario con id
     user = User.query.filter_by(id=idUser).first()
     # obtener id de estado
-    idEstado=self.obtenerIdEstado(data)
+    idEstado=data['idEstado']
     # actualizar su estado
-    if "estado" in data:
+    if "idEstado" in data:
       user.estado_id = idEstado
     #
     db.session.commit()
