@@ -54,7 +54,7 @@ class EstadoSchema(ma.Schema):
 estadoSchema = EstadoSchema()
 estadosSchema = EstadoSchema(many=True)
 
-# ************************************
+
 class Conexion(db.Model):
     __tablename__ = 'detalle_conexion'
     id = db.Column(db.Integer, primary_key=True)
