@@ -27,12 +27,7 @@ class LoginController(Resource):
     else:
       # cambiar el estado a conectado
       user.estado_id = 1
-       # agregar la fecha de conexion a la hora de logearse
-      new_conexion=Conexion(
-        user_id=user1['id'],
-        create_At= datetime.datetime.now()
-      )
-      db.session.add(new_conexion)
+      user.last_connection=datetime.datetime.now()
 
       db.session.commit()
 
