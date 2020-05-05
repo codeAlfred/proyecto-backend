@@ -16,17 +16,12 @@ user.add_resource(UserController,'/user/<int:id>')
 user.add_resource(UserOrderController,'/user/order/<string:orden>')
 user.add_resource(UserSearchController,'/user/search/<string:nombre>')
 user.add_resource(UserStateController,'/user/state')
+
 user.add_resource(UserLastConnectionController,'/user/active/connection')
 
 
 login = api.namespace('api', description='Login API')
 login.add_resource(LoginController, '/login')
-
-# endpoint de prueba
-# @api.route('/buenas', endpoint='hola')
-# class HelloWorld(Resource):
-#     def get(self):
-#         return {'hello': 'world'}
 
 
 if __name__ == "__main__":
