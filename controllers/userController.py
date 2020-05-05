@@ -101,32 +101,40 @@ class UserStateController(Resource):
   # LISTAR todos los usuarios por su estado
   def get(self):
     data = request.get_json()
-
     idEstado=self.obtenerIdEstado(data)
-    if idEstado:
-      users= User.query.filter_by(estado_id=idEstado).all()
+
+    if validarIdEstado(idEstado):
+
+      idEstado=self.obtenerIdEstado(data)
+      if idEstado:
+        users= User.query.filter_by(estado_id=idEstado).all()
+      else:
+        return {'error':'estado enviado no se encuentra en la base de datos'},400
+
+      return usersSchema.dump(users)
     else:
       return {'error':'estado enviado no se encuentra en la base de datos'},400
-
-    return usersSchema.dump(users)
 
   # ACTUALIZAR o cambiar el estado de un usuario y guarda la fecha y hora del ultimo estado de conectado
   def put(self):
     data = request.get_json()
-    user = User.query.filter_by(id=data['id']).first()
-    dic_user=userSchema.dump(user)
 
-    if "idEstado" in data:
-      user.estado_id = data['idEstado']
-      if dic_user["estado_id"] == 1 and  data['idEstado']>1:
-        user.last_connection=datetime.datetime.now()
+    if validarIdUser(data['id']) and validarIdEstado(data['idEstado']):
+      user = User.query.filter_by(id=data['id']).first()
+      dic_user=userSchema.dump(user)
+      if "idEstado" in data:
+        user.estado_id = data['idEstado']
+        if dic_user["estado_id"] == 1 and  data['idEstado']>1:
+          user.last_connection=datetime.datetime.now()
+      else:
+        return {'error':'nombre del campo incorrecto'},400
+
+      db.session.commit()
+
+      user = User.query.filter_by(id=data['id']).first()
+      return userSchema.dump(user)
     else:
-      return {'error':'nombre del campo incorrecto'},400
-
-    db.session.commit()
-
-    user = User.query.filter_by(id=data['id']).first()
-    return userSchema.dump(user)
+       return {'error':'usuario o estado no encontrado en la base de datos'},400
 
   # funcion para obtener el id de un Estado
   def obtenerIdEstado(self,data):
@@ -141,10 +149,42 @@ class UserStateController(Resource):
 class UserLastConnectionController(Resource):
   # MOSTRAR la ultima conexion activa
   def get(self):
+
     data = request.get_json()
-    user = User.query.filter_by(id=data['idUser']).first()
+    if validarIdUser(data['idUser']):
+      user = User.query.filter_by(id=data['idUser']).first()
 
-    return userSchema.dump(user)
+      return userSchema.dump(user)
+    else:
+      return {'error':'usuario no encontrado en la base de datos'},400
 
+# validar que el id del usuario enviado se encuentre en la base de datos
+def validarIdUser(idUser):
 
+  user=User.query.with_entities(User.id)
+  lista=usersSchema.dump(user)
+  ids=[]
+  for diccionario in lista:
+    for key, value in diccionario.items():
+      ids.append(value)
+
+  if idUser in ids:
+    return True
+  else:
+    return False
+  
+# validar que el id del estado enviado se encuentre en la base de datos
+def validarIdEstado(idEstado):
+
+  estado=Estado.query.with_entities(Estado.id)
+  lista=estadosSchema.dump(estado)
+  ids=[]
+  for diccionario in lista:
+    for key, value in diccionario.items():
+      ids.append(value)
+
+  if idEstado in ids:
+    return True
+  else:
+    return False
 
