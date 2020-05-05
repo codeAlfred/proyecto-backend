@@ -79,15 +79,22 @@ class UserPostController(Resource):
     return userSchema.dump(new_user)
 
 
-class UserOrderController(Resource):
+class UserOrderNameOrLastNameController(Resource):
   # LISTAR todos los usuarios por orden de apellido o nombre
-  def get(self, orden):
+  def get(self, nameOrLastName):
     users=''
-    if orden == 'apellido':
+    if nameOrLastName == 'apellido':
       users = User.query.order_by(User.apellido).all()
-    if orden == 'nombre':
+    if nameOrLastName == 'nombre':
       users = User.query.order_by(User.nombre).all()
 
+    return usersSchema.dump(users)
+
+class UserListSpecializationController(Resource):
+  # LISTAR todos los usuarios por su especialidad
+  def get(self, specialization):
+    print(specialization)
+    users= User.query.filter_by(description=specialization).all()
     return usersSchema.dump(users)
 
 class UserSearchController(Resource):
