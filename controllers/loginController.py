@@ -25,9 +25,7 @@ class LoginController(Resource):
     if not authorized:
       return {'error':'Email or password invalid'},401
     else:
-      # cambiar el estado a conectado
       user.estado_id = 1
-      user.last_connection=datetime.datetime.now()
 
       db.session.commit()
 
