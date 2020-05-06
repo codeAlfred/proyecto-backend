@@ -1,6 +1,3 @@
-from flask import Flask
-# importando la libreria flask restx
-from flask_restx import Resource
 
 from server import *
 # importando los modelos
@@ -27,7 +24,6 @@ user.add_resource(UserLastConnectionController,'/user/active/connection')
 login = api.namespace('api', description='Login API')
 login.add_resource(LoginController, '/login')
 
-
 if __name__ == "__main__":
-	app.run(port=8000, debug=True)
+	app.run(port=config["PORTAPI"], debug=config['DEBUG'])
 
