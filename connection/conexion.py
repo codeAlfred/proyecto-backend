@@ -10,7 +10,7 @@ class ConnexionBD(Environment):
         self.__BD = data["BD"]
         self.__HOST = data["HOST"]
         self.__DATABASE = data["DATABASE"]
-        self.__PORT = data["PORT"]
+        self.__PORT = data["PORTBD"]
         self.__USER = data["USER"]
         self.__PASS = data["PASS"]
         # variables de configuracion de alchemy
