@@ -1,16 +1,27 @@
 import os
-from dotenv import load_dotenv
+import os.path
 
-load_dotenv()
+from distutils.util import strtobool
 
-class Environment:
+if os.path.isfile('utils/env.py'):
+    print ("Como existe importar archivo de ambiente de desarrollo")
+    import utils.env
+
+
+class Environment():
+
+    def configGeneral(self):
+        return {
+            "PORTAPI": int(os.environ["PORTA"]),
+            'DEBUG': strtobool(os.environ["DEBUG"])
+        }
 
     def settingsBD(self):
         return{
-            'BD': os.getenv("BD", 'sqlLite'),
-            'HOST': os.getenv("HOST", '127.0.0.1'),
-            'DATABASE': os.getenv("DATABASE", 'dbTest'),
-            'PORT': os.getenv("PORT", 3306),
-            'USER': os.getenv("USER", 'root'),
-            'PASS': os.getenv("PASSWORD", 'root'),
+            'BD': os.environ["BD"],
+            'HOST': os.environ["HOST"],
+            'DATABASE': os.environ["DATABASE"],
+            'PORTBD': int(os.environ["PORTBD"]),
+            'USER': os.environ["USER"],
+            'PASS': os.environ["PASSWORD"],
         }
