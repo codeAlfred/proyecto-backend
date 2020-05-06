@@ -17,3 +17,6 @@ api = Api(
         version='1.0',
         description='aplicacion CRUD',
     )
+
+from utils.environment import Environment
+config = Environment().configGeneral()
