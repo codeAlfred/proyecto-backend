@@ -18,6 +18,7 @@ class User(db.Model):
     description = db.Column(db.Text(),nullable=False)
     estado_id = db.Column(db.Integer, db.ForeignKey('estados.id'))
     sede_id = db.Column(db.Integer, db.ForeignKey('sedes.id'))
+    especialidad_id = db.Column(db.Integer, db.ForeignKey('especialidades.id'))
     last_connection = db.Column(db.DateTime, default=datetime.datetime.now())
 
     def hash_password(self):
@@ -39,10 +40,17 @@ class Sede(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombreSede = db.Column(db.String(100), unique=True, nullable=False)
     users= db.relationship('User', backref='sede', lazy=True)
+    
+class Especialidad(db.Model):
+    __tablename__ ='especialidades'
+
+    id = db.Column(db.Integer, primary_key=True)
+    nombreEspecialidad = db.Column(db.String(100), unique=True, nullable=False)
+    users= db.relationship('User', backref='especialidad', lazy=True)
 
 class UserSchema(ma.Schema):
     class Meta:
-        fields = ("id","nombre","apellido","password","email","movil","fechaNacimiento","foto","description","estado_id","sede_id","last_connection")
+        fields = ("id","nombre","apellido","password","email","movil","fechaNacimiento","foto","description","estado_id","sede_id","especialidad_id","last_connection")
 
 userSchema = UserSchema()
 usersSchema = UserSchema(many=True)
@@ -54,4 +62,10 @@ class EstadoSchema(ma.Schema):
 estadoSchema = EstadoSchema()
 estadosSchema = EstadoSchema(many=True)
 
+class EspecialidadSchema(ma.Schema):
+    class Meta:
+        fields = ("id","nombreEspecialidad")
+
+especialidadSchema = EspecialidadSchema()
+especialidadesSchema = EspecialidadSchema(many=True)
 
