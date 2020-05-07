@@ -108,11 +108,9 @@ class UserStateController(Resource):
   # LISTAR todos los usuarios por su estado
   def get(self):
     data = request.get_json()
-    idEstado=self.obtenerIdEstado(data)
+    idEstado=data["idEstado"]
 
     if validarIdEstado(idEstado):
-
-      idEstado=self.obtenerIdEstado(data)
       if idEstado:
         users= User.query.filter_by(estado_id=idEstado).all()
       else:
@@ -142,16 +140,6 @@ class UserStateController(Resource):
       return userSchema.dump(user)
     else:
        return {'error':'usuario o estado no encontrado en la base de datos'},400
-
-  # funcion para obtener el id de un Estado
-  def obtenerIdEstado(self,data):
-    try:
-      estado= Estado.query.filter_by(nombreEstado=data['estado']).all()
-      idEstado= estadosSchema.dump(estado)[0]['id']
-      return idEstado
-    except:
-      return False
-
 
 class UserLastConnectionController(Resource):
   # MOSTRAR la ultima conexion activa
