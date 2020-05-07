@@ -53,7 +53,7 @@ class UserPostController(Resource):
     users = User.query.all()
     return usersSchema.dump(users)
 
-  # AGREGAR un usuario
+  # AGREGAR un usuario validando el ingreso correcto del movil ejm:+519xxxxxxxx
   @jwt_required
   def post(self):
     data = request.get_json()
@@ -61,22 +61,36 @@ class UserPostController(Resource):
     # convertir la fecha de tipo string a tipo datetime
     date_time_obj = datetime.datetime.strptime(data['fechaNacimiento'], '%Y-%m-%d')
 
-    new_user = User(
-      nombre=data['nombre'],
-      apellido=data['apellido'],
-      password = data['password'],
-      email = data['email'],
-      movil = data['movil'],
-      fechaNacimiento = date_time_obj,
-      foto = data['foto'],
-      description = data['description'],
-      estado_id = data['estado_id'],
-      sede_id = data['sede_id']
-    )
+    telefono = data["movil"]
 
-    db.session.add(new_user)
-    db.session.commit()
-    return userSchema.dump(new_user)
+    if len(telefono) == 12:
+      if telefono[:4] == "+519":
+        if telefono[4:].isnumeric():
+          new_user = User(
+              nombre=data['nombre'],
+              apellido=data['apellido'],
+              password = data['password'],
+              email = data['email'],
+              movil = data['movil'],
+              fechaNacimiento = date_time_obj,
+              foto = data['foto'],
+              description = data['description'],
+              estado_id = data['estado_id'],
+              sede_id = data['sede_id'],
+              especialidad_id = data['especialidad_id']
+            )
+
+          db.session.add(new_user)
+          db.session.commit()
+          return userSchema.dump(new_user)
+        else:
+          return {'error':'ingresar solo numeros del 0 al 9'},400
+      else:
+        return {'error':'el codigo postal es +51 y el movil debe comenzar con 9'},400
+    else:
+      return {'error':'tamaño demasiado grande para el movil'},400
+
+
 
 
 class UserOrderNameOrLastNameController(Resource):
