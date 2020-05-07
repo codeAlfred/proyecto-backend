@@ -12,7 +12,7 @@ user.add_resource(UserPostController,'/user')
 user.add_resource(UserController,'/user/<int:id>')
 
 user.add_resource(UserOrderNameOrLastNameController,'/user/list/<string:nameOrLastName>')
-user.add_resource(UserListSpecializationController,'/user/list/specialization/<string:specialization>')
+user.add_resource(UserListSpecializationController,'/user/list/specialization')
 
 
 user.add_resource(UserSearchController,'/user/search/<string:nombre>')
