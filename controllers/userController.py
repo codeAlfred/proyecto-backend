@@ -92,10 +92,15 @@ class UserOrderNameOrLastNameController(Resource):
 
 class UserListSpecializationController(Resource):
   # LISTAR todos los usuarios por su especialidad
-  def get(self, specialization):
-    print(specialization)
-    users= User.query.filter_by(description=specialization).all()
-    return usersSchema.dump(users)
+  def get(self):
+    data = request.get_json()
+    idEspecializacion=data["idEspecialidad"]
+    if validarIdEspecialidad(idEspecializacion):
+
+      users= User.query.filter_by(especialidad_id=idEspecializacion).all()
+      return usersSchema.dump(users)
+    else:
+      return {'error':'especialidad enviada no se encuentra en la base de datos'},400
 
 class UserSearchController(Resource):
   # BUSCAR todos los usuarios ingresando algunas letras de su nombre
@@ -182,4 +187,20 @@ def validarIdEstado(idEstado):
     return True
   else:
     return False
+
+# validar que el id del estado enviado se encuentre en la base de datos
+def validarIdEspecialidad(idEspecialidad):
+
+  especialidad=Especialidad.query.with_entities(Especialidad.id)
+  lista=especialidadesSchema.dump(especialidad)
+  ids=[]
+  for diccionario in lista:
+    for key, value in diccionario.items():
+      ids.append(value)
+
+  if idEspecialidad in ids:
+    return True
+  else:
+    return False
+
 
