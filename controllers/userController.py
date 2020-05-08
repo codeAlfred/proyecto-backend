@@ -21,7 +21,7 @@ class UserController(Resource):
   def put(self, id):
 
     data = request.get_json()
-    
+
     if validarIdUser(id):
       user = User.query.filter_by(id=id).first()
       if "nombre" in data:
@@ -48,7 +48,8 @@ class UserController(Resource):
         if validarMovil(data["movil"]).get("valor"):
           user.movil = data["movil"]
         else:
-          return validarMovil(data["movil"]).get("mensaje")
+          mensaje=validarMovil(data["movil"]).get("mensaje")
+          return {"error":""+mensaje}
 
       if "fechaNacimiento" in data:
         try:
@@ -93,7 +94,7 @@ class UserController(Resource):
       user = User.query.filter_by(id=id).first()
       db.session.delete(user)
       db.session.commit()
-      return {"success":"usuario eliminado exitosamente"}
+      return {"success":f"usuario de id {id}, eliminado exitosamente"}
     else:
       return {"error":f"el usuario con id {id}, no se encuentra en la base de datos"}
 
@@ -109,30 +110,86 @@ class UserPostController(Resource):
   @jwt_required
   def post(self):
     data = request.get_json()
+    # validar que se me envie todos los campos
+    # campos = User.__table__.columns.keys()
+    camposColumnas = ["nombre","apellido","password","email","movil","fechaNacimiento","foto","description","estado_id","sede_id","especialidad_id"]
 
-    if validarMovil(data["movil"]).get("valor"):
-       # convertir la fecha de tipo string a tipo datetime
-      date_time_obj = datetime.datetime.strptime(data['fechaNacimiento'], '%Y-%m-%d')
+    camposIguales=[]
+    camposFaltantes=[]
+    for campo in camposColumnas:
+      if campo in data.keys():
+        camposIguales.append(campo)
+      else:
+        camposFaltantes.append(campo)
+    print(camposIguales)
+    print(camposFaltantes)
+    fotoDefault ="https://fotosbackend.s3.amazonaws.com/person0.png"
+    if len(camposColumnas) == len(camposIguales):
+      # convertir la fecha de tipo string a tipo datetime
+
+
+      if validarCaracteresAlfabeticos(data["nombre"]):
+        nombre = data["nombre"]
+      else:
+        return {"error":"ingrese el nombre correctamente"}
+
+      if validarCaracteresAlfabeticos(data["apellido"]):
+        apellido = data["apellido"]
+      else:
+        return {"error":"ingrese el apellido correctamente"}
+
+      if validarCorreo(data["email"]):
+        email = data["email"]
+      else:
+        return {"error":"ingrese el email correctamente"}
+
+      if validarMovil(data["movil"]).get("valor"):
+        movil = data["movil"]
+      else:
+        mensaje=validarMovil(data["movil"]).get("mensaje")
+        return {"error":""+mensaje}
+
+      try:
+        date_time_obj = datetime.datetime.strptime(data['fechaNacimiento'], '%Y-%m-%d')
+      except Exception as ex:
+        return {"error":str(ex)}
+
+      if validarIdEstado(data['estado_id']):
+        estado_id= data['estado_id']
+      else:
+        return {"error":"el estado no se encuentra en la base de datos"}
+
+      if validarIdSede(data['sede_id']):
+        sede_id = data['sede_id']
+      else:
+        return {"error":"la sede no se encuentra en la base de datos"}
+
+      if validarIdEspecialidad(data['especialidad_id']):
+        especialidad_id = data['especialidad_id']
+      else:
+        return {"error":"la especialidad no se encuentra en la base de datos"}
 
       new_user = User(
-              nombre=data['nombre'],
-              apellido=data['apellido'],
+
+              nombre=nombre,
+              apellido=apellido,
               password = data['password'],
-              email = data['email'],
-              movil = data['movil'],
+              email = email,
+              movil = movil,
               fechaNacimiento = date_time_obj,
-              foto = data['foto'],
+              foto = data['foto'] if len(data['foto'])!=0 else fotoDefault,
               description = data['description'],
-              estado_id = data['estado_id'],
-              sede_id = data['sede_id'],
-              especialidad_id = data['especialidad_id']
+              estado_id = estado_id,
+              sede_id = sede_id,
+              especialidad_id = especialidad_id
+
             )
 
       db.session.add(new_user)
       db.session.commit()
       return userSchema.dump(new_user)
     else:
-      return validarMovil(data["movil"]).get("mensaje")
+      return {"error": "falta ingresar los siguientes campos obligatorios: " + str(camposFaltantes)}
 
 class UserOrderNameOrLastNameController(Resource):
   # LISTAR todos los usuarios por orden de apellido o nombre
