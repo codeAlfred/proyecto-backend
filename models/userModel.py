@@ -69,3 +69,9 @@ class EspecialidadSchema(ma.Schema):
 especialidadSchema = EspecialidadSchema()
 especialidadesSchema = EspecialidadSchema(many=True)
 
+class SedeSchema(ma.Schema):
+    class Meta:
+        fields = ("id","nombreSede")
+
+sedeSchema = SedeSchema()
+sedesSchema = SedeSchema(many=True)
