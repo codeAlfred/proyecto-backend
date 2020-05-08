@@ -1,13 +1,13 @@
 from flask import request
 from flask_jwt_extended import jwt_required#jwt
 
+from controllers.validaciones import *
 
 #Modulos propios del sistema
 from models import *
 from flask_restx import Resource
 
 import datetime
-import re
 
 class UserController(Resource):
   # BUSCAR un usuario por su id
@@ -17,10 +17,11 @@ class UserController(Resource):
     return userSchema.dump(user)
 
   # ACTUALIZAR un usuario por su id validando los campos ingresados
-  # @jwt_required
+  @jwt_required
   def put(self, id):
 
     data = request.get_json()
+    
     if validarIdUser(id):
       user = User.query.filter_by(id=id).first()
       if "nombre" in data:
@@ -83,15 +84,18 @@ class UserController(Resource):
       user = User.query.filter_by(id=id).first()
       return userSchema.dump(user)
     else:
-      return {"error":"el usuario no se encuentra en la base de datos"}
+      return {"error":f"el usuario con id {id}, no se encuentra en la base de datos"}
 
   #  ELIMINAR un usuario por su id
   @jwt_required
   def delete (self,id):
-    user = User.query.filter_by(id=id).first()
-    db.session.delete(user)
-    db.session.commit()
-    return userSchema.dump(user)
+    if validarIdUser(id):
+      user = User.query.filter_by(id=id).first()
+      db.session.delete(user)
+      db.session.commit()
+      return {"success":"usuario eliminado exitosamente"}
+    else:
+      return {"error":f"el usuario con id {id}, no se encuentra en la base de datos"}
 
 class UserPostController(Resource):
   # LISTAR todos los usuarios
@@ -132,17 +136,22 @@ class UserPostController(Resource):
 
 class UserOrderNameOrLastNameController(Resource):
   # LISTAR todos los usuarios por orden de apellido o nombre
+  @jwt_required
   def get(self, nameOrLastName):
-    users=''
-    if nameOrLastName == 'apellido':
-      users = User.query.order_by(User.apellido).all()
-    if nameOrLastName == 'nombre':
-      users = User.query.order_by(User.nombre).all()
+    if nameOrLastName == 'apellido' or nameOrLastName == 'nombre':
+      users=''
+      if nameOrLastName == 'apellido':
+        users = User.query.order_by(User.apellido).all()
+      if nameOrLastName == 'nombre':
+        users = User.query.order_by(User.nombre).all()
 
-    return usersSchema.dump(users)
+      return usersSchema.dump(users)
+    else:
+      return {"error":"la opción ingresada es incorrecta- pruebe con: 'nombre' o 'apellido'"}
 
 class UserListSpecializationController(Resource):
   # LISTAR todos los usuarios por su especialidad
+  @jwt_required
   def get(self):
     data = request.get_json()
     idEspecializacion=data["idEspecialidad"]
@@ -155,13 +164,21 @@ class UserListSpecializationController(Resource):
 
 class UserSearchController(Resource):
   # BUSCAR todos los usuarios ingresando algunas letras de su nombre
+  @jwt_required
   def get(self, nombre):
-    search =f'%{nombre}%'
-    users = User.query.filter(User.nombre.like(search)).all()
-    return usersSchema.dump(users)
+    if validarCaracteresAlfabeticos(nombre):
+      search =f'%{nombre}%'
+      users = User.query.filter(User.nombre.like(search)).all()
+      if len(users)!=0:
+        return usersSchema.dump(users)
+      else:
+        return  {'error':f'no hay usuarios que contengan la cadena: {nombre}'},400
+    else:
+      return {'error':'la cadena debe contener solo letras'},400
 
 class UserStateController(Resource):
   # LISTAR todos los usuarios por su estado
+  @jwt_required
   def get(self):
     data = request.get_json()
     idEstado=data["idEstado"]
@@ -178,6 +195,7 @@ class UserStateController(Resource):
       return {'error':'estado enviado no se encuentra en la base de datos'},400
 
   # ACTUALIZAR o cambiar el estado de un usuario y guarda la fecha y hora del ultimo estado de conectado
+  @jwt_required
   def put(self):
     data = request.get_json()
 
@@ -196,10 +214,11 @@ class UserStateController(Resource):
       user = User.query.filter_by(id=data['id']).first()
       return userSchema.dump(user)
     else:
-       return {'error':'usuario o estado no encontrado en la base de datos'},400
+       return {'error':f'usuario {data["id"]} o estado {data["idEstado"]}, no se encuentra en la base de datos'},400
 
 class UserLastConnectionController(Resource):
   # MOSTRAR la ultima conexion activa
+  @jwt_required
   def get(self):
 
     data = request.get_json()
@@ -210,89 +229,3 @@ class UserLastConnectionController(Resource):
     else:
       return {'error':'usuario no encontrado en la base de datos'},400
 
-# validar que el id del usuario enviado se encuentre en la base de datos
-def validarIdUser(idUser):
-
-  user=User.query.with_entities(User.id)
-  lista=usersSchema.dump(user)
-  ids=[]
-  for diccionario in lista:
-    for key, value in diccionario.items():
-      ids.append(value)
-
-  if idUser in ids:
-    return True
-  else:
-    return False
-
-# validar que el id del estado enviado se encuentre en la base de datos
-def validarIdEstado(idEstado):
-
-  estado=Estado.query.with_entities(Estado.id)
-  lista=estadosSchema.dump(estado)
-  ids=[]
-  for diccionario in lista:
-    for key, value in diccionario.items():
-      ids.append(value)
-
-  if idEstado in ids:
-    return True
-  else:
-    return False
-
-# validar que el id del estado enviado se encuentre en la base de datos
-def validarIdEspecialidad(idEspecialidad):
-
-  especialidad=Especialidad.query.with_entities(Especialidad.id)
-  lista=especialidadesSchema.dump(especialidad)
-  ids=[]
-  for diccionario in lista:
-    for key, value in diccionario.items():
-      ids.append(value)
-
-  if idEspecialidad in ids:
-    return True
-  else:
-    return False
-
-def validarMovil(movil):
-    if len(movil) == 12:
-      if movil[:4] == "+519":
-        if movil[4:].isnumeric():
-          return {"valor":True, "mensaje":"movil correcto"}
-        else:
-          return {"valor":False, 'mensaje':'ingresar solo numeros del 0 al 9'}
-      else:
-        return {"valor":False, 'mensaje':'el codigo postal es +51 y el movil debe comenzar con 9'}
-    else:
-      return {"valor":False, 'mensaje':'tamaño demasiado grande para el movil'}
-
-# validar que el nombre y apellido sea puras letras
-def validarCaracteresAlfabeticos(palabra):
-  palabra = palabra.replace(' ','')
-  if palabra.isalpha():
-    return True
-  else:
-    return  False
-
-# validar el correo
-def validarCorreo(email):
-  if re.match('^[(a-z0-9\_\-\.)]+@[(a-z0-9\_\-\.)]+\.[(a-z)]{2,15}$', email.lower()):
-    return True
-  else:
-    return False
-
-# validar sede
-def validarIdSede(idSede):
-
-  sede=Sede.query.with_entities(Sede.id)
-  lista=sedesSchema.dump(sede)
-  ids=[]
-  for diccionario in lista:
-    for key, value in diccionario.items():
-      ids.append(value)
-
-  if idSede in ids:
-    return True
-  else:
-    return False
