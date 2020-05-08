@@ -50,6 +50,21 @@ class TestConnection(unittest.TestCase):
         response = self.app.post(BASE_URL,headers={"Content-Type":"application/json"}, data=payload)
         self.assertEqual(401,response.status_code)
         
+    def test_put(self):
+        response = self.app.put(GOOD_URL)
+        self.assertEqual(401, response.status_code)
+    
+    def test_delete(self):
+        response = self.app.delete(GOOD_URL)
+        self.assertEqual(401, response.status_code)
+        
+    # def test_updateError(self):
+    #     response = self.app.put(GOOD_URL)
+    #     self.assertEqual(401, response.status_code)
+        
+    #     dataJson = response.get_json()
+    #     self.assertEqual("Recurso Eliminado",dataJson["message"])
+        
 
 if __name__ == '__main__':
     unittest.main()
