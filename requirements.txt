@@ -12,3 +12,4 @@ flask-jwt-extended==3.24.1
 Werkzeug==0.16.1
 mysql-connector-python==8.0.17
 mysqlclient==1.4.6
+flask-swagger==0.2.14
