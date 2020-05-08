@@ -83,7 +83,7 @@ class UserController(Resource):
       db.session.commit()
 
       user = User.query.filter_by(id=id).first()
-      return userSchema.dump(user)
+      return {"success":"usuario actualizado con exito","user":str(userSchema.dump(user))}
     else:
       return {"error":f"el usuario con id {id}, no se encuentra en la base de datos"}
 
@@ -187,7 +187,7 @@ class UserPostController(Resource):
 
       db.session.add(new_user)
       db.session.commit()
-      return userSchema.dump(new_user)
+      return {"success":"usuario creado con exito","user":str(userSchema.dump(new_user))}
     else:
       return {"error": "falta ingresar los siguientes campos obligatorios: " + str(camposFaltantes)}
 
