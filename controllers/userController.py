@@ -16,30 +16,74 @@ class UserController(Resource):
     user = User.query.get_or_404(id)
     return userSchema.dump(user)
 
-  # ACTUALIZAR un usuario por su id
+  # ACTUALIZAR un usuario por su id validando los campos ingresados
   # @jwt_required
   def put(self, id):
 
     data = request.get_json()
-    
-    user = User.query.filter_by(id=id).first()
-    if "nombre" in data: user.nombre = data["nombre"]
-    if "apellido" in data: user.apellido = data["apellido"]
-    if "password" in data: user.password = data["password"]
-    if "email" in data: user.email = data["email"]
-    if "movil" in data: user.movil = data["movil"]
-    if "fechaNacimiento" in data: 
-      date_time_obj = datetime.datetime.strptime(data['fechaNacimiento'], '%Y-%m-%d')
-      user.fechaNacimiento = date_time_obj
-    if "foto" in data: user.foto = data["foto"]
-    if "description" in data: user.description = data["description"]
-    if "estado_id" in data: user.estado_id= data['estado_id'],
-    if "sede_id" in data: user.sede_id = data['sede_id'],
-    if "especialidad_id" in data: user.especialidad_id = data['especialidad_id']
-    db.session.commit()
+    if validarIdUser(id):
+      user = User.query.filter_by(id=id).first()
+      if "nombre" in data:
+        if validarCaracteresAlfabeticos(data["nombre"]):
+          user.nombre = data["nombre"]
+        else:
+          return {"error":"ingrese el nombre correctamente"}
 
-    user = User.query.filter_by(id=id).first()
-    return userSchema.dump(user)
+      if "apellido" in data:
+        if validarCaracteresAlfabeticos(data["apellido"]):
+          user.apellido = data["apellido"]
+        else:
+          return {"error":"ingrese el apellido correctamente"}
+
+      if "password" in data: user.password = data["password"]
+
+      if "email" in data:
+        if validarCorreo(data["email"]):
+          user.email = data["email"]
+        else:
+          return {"error":"ingrese el email correctamente"}
+
+      if "movil" in data:
+        if validarMovil(data["movil"]).get("valor"):
+          user.movil = data["movil"]
+        else:
+          return validarMovil(data["movil"]).get("mensaje")
+
+      if "fechaNacimiento" in data:
+        try:
+          date_time_obj = datetime.datetime.strptime(data['fechaNacimiento'], '%Y-%m-%d')
+          user.fechaNacimiento = date_time_obj
+        except Exception as ex:
+          return {"error":str(ex)}
+
+      if "foto" in data: user.foto = data["foto"]
+
+      if "description" in data: user.description = data["description"]
+
+      if "estado_id" in data:
+        if validarIdEstado(data['estado_id']):
+          user.estado_id= data['estado_id']
+        else:
+          return {"error":"el estado no se encuentra en la base de datos"}
+
+      if "sede_id" in data:
+        if validarIdSede(data['sede_id']):
+          user.sede_id = data['sede_id']
+        else:
+          return {"error":"la sede no se encuentra en la base de datos"}
+
+      if "especialidad_id" in data:
+        if validarIdEspecialidad(data['especialidad_id']):
+          user.especialidad_id = data['especialidad_id']
+        else:
+          return {"error":"la especialidad no se encuentra en la base de datos"}
+
+      db.session.commit()
+
+      user = User.query.filter_by(id=id).first()
+      return userSchema.dump(user)
+    else:
+      return {"error":"el usuario no se encuentra en la base de datos"}
 
   #  ELIMINAR un usuario por su id
   @jwt_required
@@ -85,10 +129,6 @@ class UserPostController(Resource):
       return userSchema.dump(new_user)
     else:
       return validarMovil(data["movil"]).get("mensaje")
-
-
-
-
 
 class UserOrderNameOrLastNameController(Resource):
   # LISTAR todos los usuarios por orden de apellido o nombre
@@ -184,7 +224,7 @@ def validarIdUser(idUser):
     return True
   else:
     return False
-  
+
 # validar que el id del estado enviado se encuentre en la base de datos
 def validarIdEstado(idEstado):
 
@@ -215,7 +255,6 @@ def validarIdEspecialidad(idEspecialidad):
   else:
     return False
 
-
 def validarMovil(movil):
     if len(movil) == 12:
       if movil[:4] == "+519":
@@ -227,3 +266,33 @@ def validarMovil(movil):
         return {"valor":False, 'mensaje':'el codigo postal es +51 y el movil debe comenzar con 9'}
     else:
       return {"valor":False, 'mensaje':'tamaño demasiado grande para el movil'}
+
+# validar que el nombre y apellido sea puras letras
+def validarCaracteresAlfabeticos(palabra):
+  palabra = palabra.replace(' ','')
+  if palabra.isalpha():
+    return True
+  else:
+    return  False
+
+# validar el correo
+def validarCorreo(email):
+  if re.match('^[(a-z0-9\_\-\.)]+@[(a-z0-9\_\-\.)]+\.[(a-z)]{2,15}$', email.lower()):
+    return True
+  else:
+    return False
+
+# validar sede
+def validarIdSede(idSede):
+
+  sede=Sede.query.with_entities(Sede.id)
+  lista=sedesSchema.dump(sede)
+  ids=[]
+  for diccionario in lista:
+    for key, value in diccionario.items():
+      ids.append(value)
+
+  if idSede in ids:
+    return True
+  else:
+    return False
