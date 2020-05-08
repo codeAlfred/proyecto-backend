@@ -7,3 +7,4 @@ marshmallow==3.5.1
 marshmallow-sqlalchemy==0.22.3
 flask-bcrypt==0.7.1
 flask-jwt-extended==3.24.1
+Werkzeug==0.16.1
