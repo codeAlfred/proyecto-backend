@@ -16,6 +16,7 @@ api = Api(
         title='Proyecto Final Backend',
         version='1.0',
         description='aplicacion CRUD',
+        doc='/doc'
     )
 
 from utils.environment import Environment
