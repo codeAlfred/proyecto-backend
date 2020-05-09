@@ -20,8 +20,8 @@ os.environ["PASSWORD"]    = 'adminmaster2020'
 #probando mysql en mi local
 # os.environ["BD"]          = 'mysql'
 # os.environ["HOST"]        = 'localhost'
-# os.environ["DATABASE"]    = 'alchemy'
-# os.environ["PORTBD"]        = '3306'
+# os.environ["DATABASE"]    = 'dtbuser'
+# os.environ["PORTBD"]      = '3306'
 # os.environ["USER"]        = 'root'
 # os.environ["PASSWORD"]    = 'root'
 
