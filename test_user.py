@@ -15,22 +15,27 @@ import mysql.connector
 
 class TestConnection(unittest.TestCase):
     connection = None
-
+    #Metodo para configurar nuestro ambiente de pruebas (en MYSQL) antes de ejecutar las mismas
+    #devuelve status 401 por temas de autenticacion del JWT
     def setUp(self):
         app.config['TESTING']=True
         app.config['WTF_CSRF_ENABLED'] = False
-        app.config['URI'] ='mysql+mysqlconnector://root:root@localhost:3306/bduser'
+        app.config['URI'] ='mysql+mysqlconnector://adminmaster:adminmaster2020@database-project-pachaqtec.cyzimxz00kka.us-east-1.rds.amazonaws.com:3306/pachaqtecDB'
         self.app = app.test_client()
         db.drop_all()
         db.create_all()
 
     def tearDown(self):
         pass
-    
+      
+    #Prueba de listar todos los usuarios 
+    #devuelve status 401 por temas de autenticacion del JWT
     def test_getALL(self):
         response = self.app.get(BASE_URL)
         self.assertEqual(401, response.status_code)
-        
+    
+    #Prueba para crear un usuario segun tipo de datos de BD MYSQL 
+    #devuelve status 401 por temas de autenticacion del JWT
     def test_create(self):
         payload =  json.dumps({
         "apellido": "gonzales",
@@ -50,21 +55,17 @@ class TestConnection(unittest.TestCase):
         response = self.app.post(BASE_URL,headers={"Content-Type":"application/json"}, data=payload)
         self.assertEqual(401,response.status_code)
         
+    #Prueba para actualizar un usuario segun tipo de datos de BD MYSQL 
+    #devuelve status 401 por temas de autenticacion del JWT    
     def test_put(self):
         response = self.app.put(GOOD_URL)
         self.assertEqual(401, response.status_code)
-    
+        
+    #Prueba para eliminar un usuario segun tipo de datos de BD MYSQL 
+    #devuelve status 401 por temas de autenticacion del JWT
     def test_delete(self):
         response = self.app.delete(GOOD_URL)
         self.assertEqual(401, response.status_code)
         
-    # def test_updateError(self):
-    #     response = self.app.put(GOOD_URL)
-    #     self.assertEqual(401, response.status_code)
-        
-    #     dataJson = response.get_json()
-    #     self.assertEqual("Recurso Eliminado",dataJson["message"])
-        
-
 if __name__ == '__main__':
     unittest.main()
